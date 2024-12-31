@@ -66,28 +66,6 @@ interface SorterViewProps {
 }
 
 const SorterView: React.FC<SorterViewProps> = ({ array, sortingSpeed }) => {
-  // const [barWidth, setBarWidth] = useState<number>(0);
-
-  // useEffect(() => {
-  // setBarWidth(calculateBarWidth(array.length));
-  // }, [array]);
-
-  // const calculateBarWidth = (size: number): number => {
-  //   const barW = Math.pow(
-  //     size / CONSTANT_a_forBarWidth,
-  //     1 / CONSTANT_b_forBarWidth
-  //   );
-  //   return barW;
-  // };
-
-  // const calculateBarGap = (size: number): number => {
-  //   const barG = Math.pow(
-  //     size / CONSTANT_a_forBarGap,
-  //     1 / CONSTANT_b_forBarGap
-  //   );
-  //   return barG;
-  // };
-
   const flipKey: string =
     sortingSpeed <= 3 ? `${array.map((bar) => bar.id).join(",")}` : "";
 
@@ -99,7 +77,7 @@ const SorterView: React.FC<SorterViewProps> = ({ array, sortingSpeed }) => {
         alignItems: "flex-end",
         justifyContent: "center",
         p: 2,
-        height: "90vh",
+        height: "85vh",
         minHeight: "600px",
         width: "100vw",
       }}

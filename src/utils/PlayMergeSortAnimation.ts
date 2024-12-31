@@ -11,8 +11,10 @@ const PlayMergeSortAnimation = async (
   animations: SortAnimation[],
   array: BarType[],
   sortingSpeed: number,
-  updateBarArray: (array: BarType[]) => void
+  updateBarArray: (array: BarType[]) => void,
+  updateAnimationRunningState: () => void
 ) => {
+  updateAnimationRunningState();
   for (let i = 0; i < animations.length; i++) {
     if (animations[i].swap) {
       await new Promise((resolve) =>
@@ -87,6 +89,7 @@ const PlayMergeSortAnimation = async (
       }, FINAL_FLICKER_SPEED)
     );
   }
+  updateAnimationRunningState();
 };
 
 export default PlayMergeSortAnimation;

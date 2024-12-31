@@ -1,14 +1,12 @@
 import {
   AppBar,
   Box,
-  Button,
+  createTheme,
   CssBaseline,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
   Slider,
+  ThemeProvider,
   Toolbar,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import "./App.css";
@@ -32,8 +30,34 @@ import MergeSortAnimation from "./SortingAlgorithms/MergeSort";
 import PlayMergeSortAnimation from "./utils/PlayMergeSortAnimation";
 import QuickSortAnimation from "./SortingAlgorithms/QuickSort";
 import HeapSortAnimation from "./SortingAlgorithms/HeapSort";
+import * as React from "react";
+import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import MenuIcon from "@mui/icons-material/Menu";
+import ShuffleOnIcon from "@mui/icons-material/ShuffleOn";
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 
-const App: React.FC = () => {
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+    primary: {
+      main: "#1976d2",
+    },
+  },
+});
+
+interface Props {
+  window?: () => Window;
+}
+
+const drawerWidth = 240;
+
+const App: React.FC = (props: Props) => {
   const [barArray, setBarArray] = useState<BarType[]>([]);
   const [arraySize, setArraySize] = useState<number>(MAXIMUM_ARRAY_SIZE / 2);
   const [sortingSpeed, setSortingSpeed] = useState<number>(3);
@@ -43,6 +67,16 @@ const App: React.FC = () => {
   useEffect(() => {
     refreshToInitialState(arraySize);
   }, [arraySize]);
+
+  const { window } = props;
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen((prevState) => !prevState);
+  };
+
+  const container =
+    window !== undefined ? () => window().document.body : undefined;
 
   const refreshToInitialState = (arraySize: number) => {
     setBarArray(generateNewArray(arraySize));
@@ -64,6 +98,10 @@ const App: React.FC = () => {
     setBarArray(barArray);
   };
 
+  const updateAnimationRunningState = () => {
+    setAnimationRunning((state) => !state);
+  };
+
   const calculateSpeed = () => {
     const speedInMs =
       BASE_SORTING_SPEED +
@@ -72,150 +110,196 @@ const App: React.FC = () => {
     return speedInMs;
   };
 
-  const bubbleSort = () => {
-    const tmpArr = [...barArray];
-    const sortAnimation: SortAnimation[] = BubbleSortAnimation(tmpArr);
-    const speedInMs = calculateSpeed();
-    PlaySortAnimation(sortAnimation, [...barArray], speedInMs, updateBarArray);
+  const selectSortingAlgorithm = (
+    _event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    sortingAlgo: string
+  ) => {
+    setSortingAlgorithm(sortingAlgo);
   };
 
-  const selectionSort = () => {
-    const tmpArr = [...barArray];
-    const sortAnimation: SortAnimation[] = SelectionSortAnimation(tmpArr);
-    const speedInMs = calculateSpeed();
-    PlaySortAnimation(sortAnimation, [...barArray], speedInMs, updateBarArray);
+  const AlgorithmDescription: { [key: string]: string } = {
+    SelectionSort: "Selection Sort: O(n^2)",
+    BubbleSort: "Bubble Sort: O(n^2)",
+    InsertionSort: "Insertion Sort: O(n^2)",
+    MergeSort: "Merge Sort: O(nLogn)",
+    QuickSort: "Quick Sort: O(nLogn)",
+    HeapSort: "Heap Sort: O(nLogn)",
   };
 
-  const insertionSort = () => {
-    const tmpArr = [...barArray];
-    const sortAnimation: SortAnimation[] = InsertionSortAnimation(tmpArr);
-    const speedInMs = calculateSpeed();
-    PlaySortAnimation(sortAnimation, [...barArray], speedInMs, updateBarArray);
-  };
-
-  const mergeSort = () => {
-    const tmpArr = [...barArray];
-    const sortAnimation: SortAnimation[] = MergeSortAnimation(tmpArr);
-    const speedInMs = calculateSpeed();
-    PlayMergeSortAnimation(
-      sortAnimation,
-      [...barArray],
-      speedInMs,
-      updateBarArray
-    );
-  };
-
-  const quickSort = () => {
-    const tmpArr = [...barArray];
-    const sortAnimation: SortAnimation[] = QuickSortAnimation(tmpArr);
-    const speedInMs = calculateSpeed();
-    PlaySortAnimation(sortAnimation, [...barArray], speedInMs, updateBarArray);
-  };
-
-  const heapSort = () => {
-    const tmpArr = [...barArray];
-    const sortAnimation: SortAnimation[] = HeapSortAnimation(tmpArr);
-    const speedInMs = calculateSpeed();
-    PlaySortAnimation(sortAnimation, [...barArray], speedInMs, updateBarArray);
-  };
-
-  const selectSortingAlgorithm = (event: SelectChangeEvent<string>) => {
-    if (event.target.value) {
-      setSortingAlgorithm(event.target.value);
-    }
+  const Algorithms: { [key: string]: (array: BarType[]) => SortAnimation[] } = {
+    SelectionSort: SelectionSortAnimation,
+    BubbleSort: BubbleSortAnimation,
+    InsertionSort: InsertionSortAnimation,
+    MergeSort: MergeSortAnimation,
+    QuickSort: QuickSortAnimation,
+    HeapSort: HeapSortAnimation,
   };
 
   const startSortingAnimation = () => {
-    const Algorithms: { [key: string]: () => void } = {
-      SelectionSort: selectionSort,
-      BubbleSort: bubbleSort,
-      InsertionSort: insertionSort,
-      MergeSort: mergeSort,
-      QuickSort: quickSort,
-      HeapSort: heapSort,
-    };
-    setAnimationRunning(true);
-    Algorithms[sortingAlgorithm]();
-    setAnimationRunning(false);
+    const tmpArr = [...barArray];
+    const sortAnimation: SortAnimation[] = Algorithms[sortingAlgorithm](tmpArr);
+    const speedInMs = calculateSpeed();
+    if (sortingAlgorithm !== "MergeSort")
+      PlaySortAnimation(
+        sortAnimation,
+        [...barArray],
+        speedInMs,
+        updateBarArray,
+        updateAnimationRunningState
+      );
+    else
+      PlayMergeSortAnimation(
+        sortAnimation,
+        [...barArray],
+        speedInMs,
+        updateBarArray,
+        updateAnimationRunningState
+      );
   };
 
-  // const sortValidation = () => {
-  //   for (let i = 0; i < 1000; i++) {
-  //     const actualArr = generateNewArray(1000);
-  //     const tmpArr = [...actualArr];
-  //     actualArr.sort((a, b) => a.value - b.value);
-  //     HeapSort(tmpArr);
-  //     // console.log(tmpArr.map((a) => a.value).join(","));
-  //     // console.log(actualArr.map((a) => a.value).join(","));
-  //     if (
-  //       tmpArr.map((a) => a.value).join(",") ===
-  //       actualArr.map((a) => a.value).join(",")
-  //     ) {
-  //       console.log("Test: ", true);
-  //     } else console.log("Test: ", false);
-  //   }
-  // };
+  const drawer = (
+    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
+      <Typography variant="h6" sx={{ my: 2 }}>
+        Sorting Visualizer
+      </Typography>
+      <Divider />
+      <List>
+        <ListItem sx={{ paddingLeft: 1 }} disablePadding>
+          Size
+        </ListItem>
+        <ListItem>
+          <Slider
+            value={arraySize}
+            min={MINIMUM_ARRAY_SIZE}
+            max={MAXIMUM_ARRAY_SIZE}
+            valueLabelDisplay="auto"
+            onChange={handleSizeChange}
+            color="info"
+            disabled={animationRunning}
+          />
+        </ListItem>
+        <ListItem sx={{ paddingLeft: 1 }} disablePadding>
+          Speed
+        </ListItem>
+        <ListItem>
+          <Slider
+            value={sortingSpeed}
+            min={MINIMUM_SORTING_SPEED}
+            max={MAXIMUM_SORTING_SPEED}
+            valueLabelDisplay="auto"
+            onChange={handleSpeedChange}
+            color="info"
+            disabled={animationRunning}
+          />
+        </ListItem>
+      </List>
+      <Typography variant="h6" sx={{ my: 2 }}>
+        Sorting Algorithm
+      </Typography>
+      <Divider />
+      <List>
+        {Object.keys(Algorithms).map((k) => {
+          return (
+            <ListItem key={k} disablePadding>
+              <ListItemButton
+                onClick={(e) => selectSortingAlgorithm(e, k)}
+                sx={{ textAlign: "center" }}
+                defaultValue={k}
+                disabled={animationRunning}
+              >
+                <ListItemText primary={k} />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
+      </List>
+    </Box>
+  );
 
   return (
-    <>
-      <CssBaseline>
-        <Box sx={{ flexGrow: 1 }}>
-          <AppBar position="static">
-            <Toolbar>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                Sorting Visualizer
-              </Typography>
-              <Button variant="contained" onClick={createNewArray}>
-                New Array
-              </Button>
-              <InputLabel id="demo-simple-select-label">
-                Sorting Algorithm
-              </InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={sortingAlgorithm}
-                label="Sorting Algorithms"
-                onChange={selectSortingAlgorithm}
-              >
-                <MenuItem value={"BubbleSort"}>BubbleSort</MenuItem>
-                <MenuItem value={"SelectionSort"}>SelectionSort</MenuItem>
-                <MenuItem value={"InsertionSort"}>InsertionSort</MenuItem>
-                <MenuItem value={"MergeSort"}>MergeSort</MenuItem>
-                <MenuItem value={"QuickSort"}>QuickSort</MenuItem>
-                <MenuItem value={"HeapSort"}>HeapSort</MenuItem>
-              </Select>
-              <Button variant="contained" onClick={startSortingAnimation}>
-                Sort
-              </Button>
-              {/* <Button variant="contained" onClick={sortValidation}>
-                Test Sort
-              </Button> */}
-              size
-              <Slider
-                value={arraySize}
-                min={MINIMUM_ARRAY_SIZE}
-                max={MAXIMUM_ARRAY_SIZE}
-                valueLabelDisplay="auto"
-                onChange={handleSizeChange}
-              />
-              speed
-              <Slider
-                value={sortingSpeed}
-                min={MINIMUM_SORTING_SPEED}
-                max={MAXIMUM_SORTING_SPEED}
-                valueLabelDisplay="auto"
-                onChange={handleSpeedChange}
-              />
-            </Toolbar>
-          </AppBar>
+    <Box sx={{ display: "flex" }}>
+      <ThemeProvider theme={darkTheme}>
+        <CssBaseline />
+        <AppBar component="nav" color="primary">
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1, display: { xs: "block", sm: "block" } }}
+            >
+              Sorting Visualizer
+            </Typography>
+            <Box sx={{ display: "flex" }}>
+              <Tooltip title="New Array">
+                <IconButton
+                  color="inherit"
+                  edge="start"
+                  onClick={createNewArray}
+                  sx={{ mr: 2 }}
+                  disabled={animationRunning}
+                >
+                  <ShuffleOnIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Play">
+                <IconButton
+                  color="inherit"
+                  edge="start"
+                  onClick={startSortingAnimation}
+                  sx={{ mr: 2 }}
+                  disabled={animationRunning}
+                >
+                  <PlayCircleIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Toolbar>
+        </AppBar>
+        <nav>
+          <Drawer
+            container={container}
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+            sx={{
+              display: "block",
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth,
+              },
+            }}
+          >
+            {drawer}
+          </Drawer>
+        </nav>
+        <Box component="main">
+          <Toolbar />
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1, display: "block", padding: 1 }}
+          >
+            {AlgorithmDescription[sortingAlgorithm]}
+          </Typography>
+          <SortingVisualizer
+            barArray={barArray}
+            sortingSpeed={sortingSpeed}
+          ></SortingVisualizer>
         </Box>
-        <SortingVisualizer
-          barArray={barArray}
-          sortingSpeed={sortingSpeed}
-        ></SortingVisualizer>
-      </CssBaseline>
-    </>
+      </ThemeProvider>
+    </Box>
   );
 };
 
