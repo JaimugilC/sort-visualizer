@@ -12,10 +12,17 @@ const PlayMergeSortAnimation = async (
   array: BarType[],
   sortingSpeed: number,
   updateBarArray: (array: BarType[]) => void,
-  updateAnimationRunningState: () => void
+  updateAnimationRunningState: () => void,
+  updateCancellationState: () => void,
+  getCancellationState: () => boolean
 ) => {
   updateAnimationRunningState();
   for (let i = 0; i < animations.length; i++) {
+    console.log("inside animation", getCancellationState());
+    if (getCancellationState() === true) {
+      console.log("Entered Cancellation");
+      break;
+    }
     if (animations[i].swap) {
       await new Promise((resolve) =>
         setTimeout(() => {
@@ -78,17 +85,30 @@ const PlayMergeSortAnimation = async (
   }
 
   //final flicker animation
-  for (let j = 0; j < 3; j++) {
+  if (getCancellationState() === false) {
+    for (let j = 0; j < 3; j++) {
+      await new Promise((resolve) =>
+        setTimeout(() => {
+          for (let i = 0; i < array.length; i++) {
+            array[i].color = j % 2 == 0 ? BARCOLOR_GOOD : BARCOLOR_PRESORT;
+          }
+          updateBarArray([...array]);
+          resolve("");
+        }, FINAL_FLICKER_SPEED)
+      );
+    }
+  } else {
     await new Promise((resolve) =>
       setTimeout(() => {
         for (let i = 0; i < array.length; i++) {
-          array[i].color = j % 2 == 0 ? BARCOLOR_GOOD : BARCOLOR_PRESORT;
+          array[i].color = BARCOLOR_PRESORT;
         }
         updateBarArray([...array]);
         resolve("");
       }, FINAL_FLICKER_SPEED)
     );
   }
+  updateCancellationState();
   updateAnimationRunningState();
 };
 

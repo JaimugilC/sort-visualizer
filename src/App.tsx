@@ -41,6 +41,7 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import ShuffleOnIcon from "@mui/icons-material/ShuffleOn";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 const darkTheme = createTheme({
   palette: {
@@ -63,10 +64,15 @@ const App: React.FC = (props: Props) => {
   const [sortingSpeed, setSortingSpeed] = useState<number>(3);
   const [sortingAlgorithm, setSortingAlgorithm] = useState<string>("MergeSort");
   const [animationRunning, setAnimationRunning] = useState<boolean>(false);
+  const [cancelled, setCancelled] = useState<boolean>(false);
 
   useEffect(() => {
     refreshToInitialState(arraySize);
   }, [arraySize]);
+
+  useEffect(() => {
+    console.log("cancel effect", cancelled);
+  }, [cancelled]);
 
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -100,6 +106,16 @@ const App: React.FC = (props: Props) => {
 
   const updateAnimationRunningState = () => {
     setAnimationRunning((state) => !state);
+  };
+
+  const updateCancellationState = () => {
+    console.log("Updated");
+    setCancelled((state) => !state);
+  };
+
+  const getCancellationState = () => {
+    console.log("called cancelled state", cancelled);
+    return cancelled;
   };
 
   const calculateSpeed = () => {
@@ -145,7 +161,9 @@ const App: React.FC = (props: Props) => {
         [...barArray],
         speedInMs,
         updateBarArray,
-        updateAnimationRunningState
+        updateAnimationRunningState,
+        updateCancellationState,
+        getCancellationState
       );
     else
       PlayMergeSortAnimation(
@@ -153,7 +171,9 @@ const App: React.FC = (props: Props) => {
         [...barArray],
         speedInMs,
         updateBarArray,
-        updateAnimationRunningState
+        updateAnimationRunningState,
+        updateCancellationState,
+        getCancellationState
       );
   };
 
@@ -238,7 +258,22 @@ const App: React.FC = (props: Props) => {
             >
               Sorting Visualizer
             </Typography>
+
             <Box sx={{ display: "flex" }}>
+              {animationRunning && !cancelled ? (
+                <Tooltip title="Cancel">
+                  <IconButton
+                    color="inherit"
+                    edge="start"
+                    onClick={updateCancellationState}
+                    sx={{ mr: 2 }}
+                  >
+                    <CancelIcon />
+                  </IconButton>
+                </Tooltip>
+              ) : (
+                <></>
+              )}
               <Tooltip title="New Array">
                 <IconButton
                   color="inherit"
