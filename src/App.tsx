@@ -13,7 +13,10 @@ import "./App.css";
 import SortingVisualizer from "./Components/SortingVisualizer";
 import { useEffect, useState } from "react";
 import {
+  BARCOLOR_GOOD,
+  BARCOLOR_PRESORT,
   BASE_SORTING_SPEED,
+  FINAL_FLICKER_SPEED,
   MAXIMUM_ARRAY_SIZE,
   MAXIMUM_SORTING_SPEED,
   MINIMUM_ARRAY_SIZE,
@@ -23,11 +26,9 @@ import BarType from "./interface/BarType";
 import generateNewArray from "./utils/generateNewArray";
 import SortAnimation from "./interface/SortAnimation";
 import BubbleSortAnimation from "./SortingAlgorithms/BubbleSort";
-import PlaySortAnimation from "./utils/PlaySortAnimation";
 import SelectionSortAnimation from "./SortingAlgorithms/SelectionSort";
 import InsertionSortAnimation from "./SortingAlgorithms/InsertionSort";
 import MergeSortAnimation from "./SortingAlgorithms/MergeSort";
-import PlayMergeSortAnimation from "./utils/PlayMergeSortAnimation";
 import QuickSortAnimation from "./SortingAlgorithms/QuickSort";
 import HeapSortAnimation from "./SortingAlgorithms/HeapSort";
 import * as React from "react";
@@ -39,8 +40,14 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
-import ShuffleOnIcon from "@mui/icons-material/ShuffleOn";
+import ShuffleIcon from "@mui/icons-material/Shuffle";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import StopCircleIcon from "@mui/icons-material/StopCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
+import SkipNextIcon from "@mui/icons-material/SkipNext";
+import CreateSortSequence from "./utils/CreateSortSequence";
+import CreateMergeSortSequence from "./utils/CreateMergeSortSequence";
 
 const darkTheme = createTheme({
   palette: {
@@ -63,10 +70,69 @@ const App: React.FC = (props: Props) => {
   const [sortingSpeed, setSortingSpeed] = useState<number>(3);
   const [sortingAlgorithm, setSortingAlgorithm] = useState<string>("MergeSort");
   const [animationRunning, setAnimationRunning] = useState<boolean>(false);
+  const [paused, setPaused] = useState<boolean>(false);
+  const [cancelled, setCancelled] = useState<boolean>(false);
+  const [sortingSequence, setSortingSequence] = useState<BarType[][]>([]);
+  const [index, setIndex] = useState(-1);
 
   useEffect(() => {
     refreshToInitialState(arraySize);
+    //eslint-disable-next-line
   }, [arraySize]);
+
+  useEffect(() => {
+    if (cancelled) {
+      if (animationRunning) updateAnimationRunningState();
+      updateSortSequence([]);
+      setIndex(-1);
+      const tmpArr = structuredClone(barArray);
+      for (let i = 0; i < tmpArr.length; i++) {
+        tmpArr[i].color = BARCOLOR_PRESORT;
+      }
+      setTimeout(() => updateBarArray(tmpArr), calculateSpeed());
+      if (paused) {
+        updatePauseState();
+      }
+      updateCancelledState();
+    }
+    //eslint-disable-next-line
+  }, [cancelled]);
+
+  useEffect(() => {
+    if (!paused && !cancelled) {
+      if (sortingSequence.length > 0 && index < sortingSequence.length) {
+        setTimeout(() => {
+          updateBarArray(sortingSequence[index]);
+          setIndex((i) => i + 1);
+        }, calculateSpeed());
+      } else if (
+        sortingSequence.length > 0 &&
+        index >= sortingSequence.length
+      ) {
+        updateAnimationRunningState();
+        updateSortSequence([]);
+        setIndex(-1);
+
+        // final flicker animation
+        (async () => {
+          for (let j = 0; j < 3; j++) {
+            await new Promise((resolve) => {
+              const tmpArr = barArray;
+              setTimeout(() => {
+                for (let i = 0; i < tmpArr.length; i++) {
+                  tmpArr[i].color =
+                    j % 2 == 0 ? BARCOLOR_GOOD : BARCOLOR_PRESORT;
+                }
+                updateBarArray([...tmpArr]);
+                resolve("");
+              }, FINAL_FLICKER_SPEED);
+            });
+          }
+        })();
+      }
+    }
+    //eslint-disable-next-line
+  }, [index]);
 
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -79,6 +145,10 @@ const App: React.FC = (props: Props) => {
     window !== undefined ? () => window().document.body : undefined;
 
   const refreshToInitialState = (arraySize: number) => {
+    if (animationRunning) updateAnimationRunningState();
+    if (paused) updatePauseState();
+    if (cancelled) updateCancelledState();
+    updateSortSequence([]);
     setBarArray(generateNewArray(arraySize));
   };
 
@@ -100,6 +170,18 @@ const App: React.FC = (props: Props) => {
 
   const updateAnimationRunningState = () => {
     setAnimationRunning((state) => !state);
+  };
+
+  const updateCancelledState = () => {
+    setCancelled((state) => !state);
+  };
+
+  const updatePauseState = () => {
+    setPaused((state) => !state);
+  };
+
+  const updateSortSequence = (array: BarType[][]) => {
+    setSortingSequence(array);
   };
 
   const calculateSpeed = () => {
@@ -136,25 +218,37 @@ const App: React.FC = (props: Props) => {
   };
 
   const startSortingAnimation = () => {
-    const tmpArr = [...barArray];
-    const sortAnimation: SortAnimation[] = Algorithms[sortingAlgorithm](tmpArr);
-    const speedInMs = calculateSpeed();
-    if (sortingAlgorithm !== "MergeSort")
-      PlaySortAnimation(
-        sortAnimation,
-        [...barArray],
-        speedInMs,
-        updateBarArray,
-        updateAnimationRunningState
-      );
-    else
-      PlayMergeSortAnimation(
-        sortAnimation,
-        [...barArray],
-        speedInMs,
-        updateBarArray,
-        updateAnimationRunningState
-      );
+    if (paused) {
+      updatePauseState();
+    }
+    if (sortingSequence.length == 0) {
+      updateAnimationRunningState();
+      const tmpArr = [...barArray];
+      const sortAnimation: SortAnimation[] =
+        Algorithms[sortingAlgorithm](tmpArr);
+      if (sortingAlgorithm !== "MergeSort")
+        CreateSortSequence(sortAnimation, [...barArray], updateSortSequence);
+      else
+        CreateMergeSortSequence(
+          sortAnimation,
+          [...barArray],
+          updateSortSequence
+        );
+    }
+    setIndex((i) => i + 1);
+  };
+
+  const stepBackward = () => {
+    if (index > 0) {
+      updateBarArray(sortingSequence[index - 1]);
+      setIndex((i) => i - 1);
+    }
+  };
+  const stepForward = () => {
+    if (index < sortingSequence.length) {
+      updateBarArray(sortingSequence[index + 1]);
+      setIndex((i) => i + 1);
+    }
   };
 
   const drawer = (
@@ -189,7 +283,7 @@ const App: React.FC = (props: Props) => {
             valueLabelDisplay="auto"
             onChange={handleSpeedChange}
             color="info"
-            disabled={animationRunning}
+            // disabled={animationRunning}
           />
         </ListItem>
       </List>
@@ -239,28 +333,86 @@ const App: React.FC = (props: Props) => {
               Sorting Visualizer
             </Typography>
             <Box sx={{ display: "flex" }}>
-              <Tooltip title="New Array">
-                <IconButton
-                  color="inherit"
-                  edge="start"
-                  onClick={createNewArray}
-                  sx={{ mr: 2 }}
-                  disabled={animationRunning}
-                >
-                  <ShuffleOnIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Play">
-                <IconButton
-                  color="inherit"
-                  edge="start"
-                  onClick={startSortingAnimation}
-                  sx={{ mr: 2 }}
-                  disabled={animationRunning}
-                >
-                  <PlayCircleIcon />
-                </IconButton>
-              </Tooltip>
+              {paused ? (
+                <Tooltip title="Step Backward">
+                  <IconButton
+                    color="inherit"
+                    edge="start"
+                    onClick={stepBackward}
+                    sx={{ mr: 2 }}
+                    disabled={index == 0}
+                  >
+                    <SkipPreviousIcon />
+                  </IconButton>
+                </Tooltip>
+              ) : (
+                <>
+                  {animationRunning && !cancelled ? (
+                    <Tooltip title="Cancel">
+                      <IconButton
+                        color="inherit"
+                        edge="start"
+                        onClick={updateCancelledState}
+                        sx={{ mr: 2 }}
+                      >
+                        <CancelIcon />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                    <></>
+                  )}
+                </>
+              )}
+              {!animationRunning || paused ? (
+                <Tooltip title={paused ? "Resume" : "Play"}>
+                  <IconButton
+                    color="inherit"
+                    edge="start"
+                    onClick={startSortingAnimation}
+                    sx={{ mr: 2 }}
+                    // disabled={animationRunning}
+                  >
+                    <PlayCircleIcon />
+                  </IconButton>
+                </Tooltip>
+              ) : (
+                <Tooltip title="Pause">
+                  <IconButton
+                    color="inherit"
+                    edge="start"
+                    onClick={updatePauseState}
+                    sx={{ mr: 2 }}
+                    // disabled={animationRunning}
+                  >
+                    <StopCircleIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {paused ? (
+                <Tooltip title="Step Forward">
+                  <IconButton
+                    color="inherit"
+                    edge="start"
+                    onClick={stepForward}
+                    sx={{ mr: 2 }}
+                    disabled={index == sortingSequence.length - 1}
+                  >
+                    <SkipNextIcon />
+                  </IconButton>
+                </Tooltip>
+              ) : (
+                <Tooltip title="New Array">
+                  <IconButton
+                    color="inherit"
+                    edge="start"
+                    onClick={createNewArray}
+                    sx={{ mr: 2 }}
+                    disabled={animationRunning}
+                  >
+                    <ShuffleIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
             </Box>
           </Toolbar>
         </AppBar>
