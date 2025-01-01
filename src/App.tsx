@@ -332,6 +332,7 @@ const App: React.FC = (props: Props) => {
             >
               Sorting Visualizer
             </Typography>
+
             <Box sx={{ display: "flex" }}>
               {paused ? (
                 <Tooltip title="Step Backward">
