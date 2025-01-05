@@ -16,13 +16,13 @@ const QuickSortAnimation = (array: BarType[]): SortAnimation[] => {
     while (i < j) {
       while (array[++i].value <= pivot) {
         if (i == right) break;
-        if (i >= left && j <= right)
-          animations.push(AnimationConstructor(i, j, false));
+        // if (i >= left && j <= right)
+        // animations.push(AnimationConstructor(i, j, false));
       }
       while (array[--j].value > pivot) {
         if (j == left) break;
-        if (i >= left && j <= right)
-          animations.push(AnimationConstructor(i, j, false));
+        // if (i >= left && j <= right)
+        // animations.push(AnimationConstructor(i, j, false));
       }
 
       if (i >= j) break;

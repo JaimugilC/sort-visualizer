@@ -1,19 +1,15 @@
 import { Box, Grid2 } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
-import // CONSTANT_a_forBarWidth,
-// CONSTANT_b_forBarWidth,
-// CONSTANT_a_forBarGap,
-// CONSTANT_b_forBarGap,
-"../constants/UIConstants";
 import BarType from "../interface/BarType";
 import { Flipped, Flipper } from "react-flip-toolkit";
 
 interface ArrayBarProps {
   barObj: BarType;
   arraySize: number;
+  maxValue: number;
 }
 
-const ArrayBar: React.FC<ArrayBarProps> = ({ barObj, arraySize }) => {
+const ArrayBar: React.FC<ArrayBarProps> = ({ barObj, arraySize, maxValue }) => {
   const elementRef = useRef<HTMLDivElement | null>(null);
 
   const [elementWidth, setElementWidth] = useState<number>(0);
@@ -46,7 +42,7 @@ const ArrayBar: React.FC<ArrayBarProps> = ({ barObj, arraySize }) => {
           alignItems: "flex-end",
           justifyContent: "center",
           paddingBottom: "5px",
-          height: `${barObj.value}px`,
+          height: `calc(((${barObj.value}/${maxValue}) * 100%)`,
           width: `calc(100%/${arraySize})`,
           borderTopLeftRadius: "5px",
           borderTopRightRadius: "5px",
@@ -66,6 +62,18 @@ interface SorterViewProps {
 }
 
 const SorterView: React.FC<SorterViewProps> = ({ array, sortingSpeed }) => {
+  const [maxHeight, setMaxheight] = useState<number>(0);
+
+  useEffect(() => {
+    const getMaxHeight = (): number => {
+      let curMax = 0;
+      array.forEach((cur) => {
+        curMax = Math.max(curMax, cur.value);
+      });
+      return curMax;
+    };
+    setMaxheight(getMaxHeight());
+  }, [array]);
   const flipKey: string =
     sortingSpeed <= 3 ? `${array.map((bar) => bar.id).join(",")}` : "";
 
@@ -78,7 +86,7 @@ const SorterView: React.FC<SorterViewProps> = ({ array, sortingSpeed }) => {
         justifyContent: "center",
         p: 2,
         height: "85vh",
-        minHeight: "600px",
+        // minHeight: "600px",
         width: "100vw",
       }}
     >
@@ -86,7 +94,7 @@ const SorterView: React.FC<SorterViewProps> = ({ array, sortingSpeed }) => {
         <Grid2
           container
           alignItems="flex-end" // Vertical alignment (cross-axis)
-          sx={{ height: "600px", width: "80vw" }}
+          sx={{ height: "75vh", width: "80vw" }}
         >
           {array.map((ele) => {
             return (
@@ -94,6 +102,7 @@ const SorterView: React.FC<SorterViewProps> = ({ array, sortingSpeed }) => {
                 key={`${ele.id}-${ele.value}`}
                 barObj={ele}
                 arraySize={array.length}
+                maxValue={maxHeight}
               />
             );
           })}

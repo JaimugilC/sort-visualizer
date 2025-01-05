@@ -42,7 +42,7 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
-import StopCircleIcon from "@mui/icons-material/StopCircle";
+import PauseCircleFilledIcon from "@mui/icons-material/PauseCircleFilled";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
@@ -129,6 +129,10 @@ const App: React.FC = (props: Props) => {
             });
           }
         })();
+      } else if (sortingSequence.length == 0) {
+        if (animationRunning) updateAnimationRunningState();
+        updateSortSequence([]);
+        setIndex(-1);
       }
     }
     //eslint-disable-next-line
@@ -254,7 +258,7 @@ const App: React.FC = (props: Props) => {
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Typography variant="h6" sx={{ my: 2 }}>
-        Sorting Visualizer
+        Sort Visualizer
       </Typography>
       <Divider />
       <List>
@@ -269,6 +273,7 @@ const App: React.FC = (props: Props) => {
             valueLabelDisplay="auto"
             onChange={handleSizeChange}
             color="info"
+            sx={{ width: "95%" }}
             disabled={animationRunning}
           />
         </ListItem>
@@ -283,6 +288,7 @@ const App: React.FC = (props: Props) => {
             valueLabelDisplay="auto"
             onChange={handleSpeedChange}
             color="info"
+            sx={{ width: "95%" }}
             // disabled={animationRunning}
           />
         </ListItem>
@@ -330,34 +336,38 @@ const App: React.FC = (props: Props) => {
               component="div"
               sx={{ flexGrow: 1, display: { xs: "block", sm: "block" } }}
             >
-              Sorting Visualizer
+              Sort Visualizer
             </Typography>
 
             <Box sx={{ display: "flex" }}>
               {paused ? (
                 <Tooltip title="Step Backward">
-                  <IconButton
-                    color="inherit"
-                    edge="start"
-                    onClick={stepBackward}
-                    sx={{ mr: 2 }}
-                    disabled={index == 0}
-                  >
-                    <SkipPreviousIcon />
-                  </IconButton>
+                  <span>
+                    <IconButton
+                      color="inherit"
+                      edge="start"
+                      onClick={stepBackward}
+                      sx={{ ml: 1, mr: 1 }}
+                      disabled={index == 0}
+                    >
+                      <SkipPreviousIcon />
+                    </IconButton>
+                  </span>
                 </Tooltip>
               ) : (
                 <>
                   {animationRunning && !cancelled ? (
                     <Tooltip title="Cancel">
-                      <IconButton
-                        color="inherit"
-                        edge="start"
-                        onClick={updateCancelledState}
-                        sx={{ mr: 2 }}
-                      >
-                        <CancelIcon />
-                      </IconButton>
+                      <span>
+                        <IconButton
+                          color="inherit"
+                          edge="start"
+                          onClick={updateCancelledState}
+                          sx={{ ml: 1, mr: 1 }}
+                        >
+                          <CancelIcon />
+                        </IconButton>
+                      </span>
                     </Tooltip>
                   ) : (
                     <></>
@@ -366,52 +376,62 @@ const App: React.FC = (props: Props) => {
               )}
               {!animationRunning || paused ? (
                 <Tooltip title={paused ? "Resume" : "Play"}>
-                  <IconButton
-                    color="inherit"
-                    edge="start"
-                    onClick={startSortingAnimation}
-                    sx={{ mr: 2 }}
-                    // disabled={animationRunning}
-                  >
-                    <PlayCircleIcon />
-                  </IconButton>
+                  <span>
+                    <IconButton
+                      color="inherit"
+                      edge="start"
+                      onClick={startSortingAnimation}
+                      sx={{ ml: 1, mr: 1 }}
+
+                      // disabled={animationRunning}
+                    >
+                      <PlayCircleIcon />
+                    </IconButton>
+                  </span>
                 </Tooltip>
               ) : (
                 <Tooltip title="Pause">
-                  <IconButton
-                    color="inherit"
-                    edge="start"
-                    onClick={updatePauseState}
-                    sx={{ mr: 2 }}
-                    // disabled={animationRunning}
-                  >
-                    <StopCircleIcon />
-                  </IconButton>
+                  <span>
+                    <IconButton
+                      color="inherit"
+                      edge="start"
+                      onClick={updatePauseState}
+                      sx={{ ml: 1, mr: 1 }}
+
+                      // disabled={animationRunning}
+                    >
+                      <PauseCircleFilledIcon />
+                    </IconButton>
+                  </span>
                 </Tooltip>
               )}
               {paused ? (
                 <Tooltip title="Step Forward">
-                  <IconButton
-                    color="inherit"
-                    edge="start"
-                    onClick={stepForward}
-                    sx={{ mr: 2 }}
-                    disabled={index == sortingSequence.length - 1}
-                  >
-                    <SkipNextIcon />
-                  </IconButton>
+                  <span>
+                    <IconButton
+                      color="inherit"
+                      edge="start"
+                      onClick={stepForward}
+                      sx={{ ml: 1, mr: 1 }}
+                      disabled={index == sortingSequence.length - 1}
+                    >
+                      <SkipNextIcon />
+                    </IconButton>
+                  </span>
                 </Tooltip>
               ) : (
                 <Tooltip title="New Array">
-                  <IconButton
-                    color="inherit"
-                    edge="start"
-                    onClick={createNewArray}
-                    sx={{ mr: 2 }}
-                    disabled={animationRunning}
-                  >
-                    <ShuffleIcon />
-                  </IconButton>
+                  <span>
+                    <IconButton
+                      color="inherit"
+                      edge="start"
+                      onClick={createNewArray}
+                      sx={{ ml: 1, mr: 1 }}
+                      disabled={animationRunning}
+                    >
+                      <ShuffleIcon />
+                    </IconButton>
+                  </span>
                 </Tooltip>
               )}
             </Box>
