@@ -341,7 +341,7 @@ const App: React.FC = (props: Props) => {
 
             <Box sx={{ display: "flex" }}>
               {paused ? (
-                <Tooltip title="Step Backward">
+                <Tooltip title="Step Backward" enterTouchDelay={0}>
                   <span>
                     <IconButton
                       color="inherit"
@@ -357,7 +357,7 @@ const App: React.FC = (props: Props) => {
               ) : (
                 <>
                   {animationRunning && !cancelled ? (
-                    <Tooltip title="Cancel">
+                    <Tooltip title="Cancel" enterTouchDelay={0}>
                       <span>
                         <IconButton
                           color="inherit"
@@ -375,7 +375,7 @@ const App: React.FC = (props: Props) => {
                 </>
               )}
               {!animationRunning || paused ? (
-                <Tooltip title={paused ? "Resume" : "Play"}>
+                <Tooltip title={paused ? "Resume" : "Play"} enterTouchDelay={0}>
                   <span>
                     <IconButton
                       color="inherit"
@@ -390,7 +390,7 @@ const App: React.FC = (props: Props) => {
                   </span>
                 </Tooltip>
               ) : (
-                <Tooltip title="Pause">
+                <Tooltip title="Pause" enterTouchDelay={0}>
                   <span>
                     <IconButton
                       color="inherit"
@@ -406,7 +406,7 @@ const App: React.FC = (props: Props) => {
                 </Tooltip>
               )}
               {paused ? (
-                <Tooltip title="Step Forward">
+                <Tooltip title="Step Forward" enterTouchDelay={0}>
                   <span>
                     <IconButton
                       color="inherit"
@@ -420,7 +420,7 @@ const App: React.FC = (props: Props) => {
                   </span>
                 </Tooltip>
               ) : (
-                <Tooltip title="New Array">
+                <Tooltip title="New Array" enterTouchDelay={0}>
                   <span>
                     <IconButton
                       color="inherit"
