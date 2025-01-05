@@ -3,6 +3,7 @@ import {
   Box,
   createTheme,
   CssBaseline,
+  Grid2,
   Slider,
   ThemeProvider,
   Toolbar,
@@ -46,6 +47,8 @@ import PauseCircleFilledIcon from "@mui/icons-material/PauseCircleFilled";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import CreateSortSequence from "./utils/CreateSortSequence";
 import CreateMergeSortSequence from "./utils/CreateMergeSortSequence";
 
@@ -313,6 +316,39 @@ const App: React.FC = (props: Props) => {
           );
         })}
       </List>
+      <Divider />
+      <Typography variant="h6" sx={{ my: 2 }}>
+        Jaimugil
+      </Typography>
+      <Grid2 container sx={{ display: "flex", justifyContent: "center" }}>
+        <Grid2>
+          <IconButton
+            color="inherit"
+            edge="start"
+            aria-label="Linkedin.com"
+            href="https://www.linkedin.com/in/jaimugil-c-b6b508279/"
+            target="_blank"
+            sx={{ ml: 1, mr: 1 }}
+          >
+            <LinkedInIcon />
+          </IconButton>
+        </Grid2>
+        <Grid2>
+          <Tooltip title="Copy Email" enterTouchDelay={0}>
+            <IconButton
+              color="inherit"
+              edge="start"
+              aria-label="Linkedin.com"
+              onClick={() => {
+                navigator.clipboard.writeText("megalajai001@gmail.com");
+              }}
+              sx={{ ml: 1, mr: 1 }}
+            >
+              <AlternateEmailIcon />
+            </IconButton>
+          </Tooltip>
+        </Grid2>
+      </Grid2>
     </Box>
   );
 
