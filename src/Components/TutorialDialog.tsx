@@ -24,10 +24,9 @@ const DialogContent1 = () => {
     <Grid2 container rowSpacing={2}>
       <Grid2 size={{ xs: 12, md: 6 }}>
         <Typography gutterBottom>
-          Sorting algorithms are used to sort a data structure according to a
-          specific order relationship, such as numerical order or
-          lexicographical order. Use this application to visualize how different
-          soring algorithm works
+          Sorting algorithms are used to arrange a data structure according to a
+          specific order, such as numerical order or lexicographical order. Use
+          this application to visualize how different sorting algorithms work.
         </Typography>
       </Grid2>
       <Grid2
@@ -54,8 +53,8 @@ const DialogContent2 = () => {
     <Grid2 container rowSpacing={2}>
       <Grid2 size={{ xs: 12, md: 6 }}>
         <Typography gutterBottom>
-          Use the Sliders in the side Drawer to Adjust the size of the array or
-          the speed of the animation
+          Use the sliders in the side drawer to adjust the size of the array or
+          the speed of the animation.
         </Typography>
       </Grid2>
       <Grid2
@@ -82,8 +81,7 @@ const DialogContent3 = () => {
     <Grid2 container rowSpacing={2}>
       <Grid2 size={{ xs: 12, md: 6 }}>
         <Typography gutterBottom>
-          Select the Sorting Algorithm from the list that is available in the
-          side drawer
+          Select a sorting algorithm from the list available in the side drawer.
         </Typography>
       </Grid2>
       <Grid2
@@ -110,7 +108,7 @@ const DialogContent4 = () => {
     <Grid2 container rowSpacing={2}>
       <Grid2 size={{ xs: 12, md: 6 }}>
         <Typography gutterBottom>
-          Use these Buttons on the Top right corner to generate New array
+          Use these buttons in the top right corner to generate a new array
         </Typography>
       </Grid2>
       <Grid2
@@ -128,7 +126,7 @@ const DialogContent4 = () => {
         />
       </Grid2>
       <Grid2 size={{ xs: 12, md: 6 }}>
-        <Typography gutterBottom>or Play the sorting</Typography>
+        <Typography gutterBottom>or play the sorting.</Typography>
       </Grid2>
       <Grid2
         size={{ xs: 12, md: 6 }}
@@ -152,7 +150,7 @@ const DialogContent5 = () => {
     <Grid2 container rowSpacing={2}>
       <Grid2 size={{ xs: 12, md: 6 }}>
         <Typography gutterBottom>
-          While the Sorting is being perfomed you can pause the Animation
+          While the sorting is being performed, you can pause the animation
         </Typography>
       </Grid2>
       <Grid2
@@ -171,7 +169,7 @@ const DialogContent5 = () => {
       </Grid2>
       <Grid2 size={{ xs: 12, md: 6 }}>
         <Typography gutterBottom>
-          or Cancel the currently running sort
+          or cancel the currently running sort.
         </Typography>
       </Grid2>
       <Grid2
@@ -196,8 +194,8 @@ const DialogContent6 = () => {
     <Grid2 container rowSpacing={2}>
       <Grid2 size={{ xs: 12, md: 6 }}>
         <Typography gutterBottom>
-          While the Sorting is paused you can navigate the current sort by
-          moving forward or stepping backward and Resume from the current state
+          While the sorting is paused, you can navigate the current sort by
+          moving forward, stepping backward, or resuming from the current state.
         </Typography>
       </Grid2>
       <Grid2
