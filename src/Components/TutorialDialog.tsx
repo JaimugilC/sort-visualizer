@@ -10,6 +10,14 @@ import Typography from "@mui/material/Typography";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { Box, Grid2 } from "@mui/material";
+const sort = new URL("../assets/sort.png", import.meta.url).href;
+const play = new URL("../assets/play.png", import.meta.url).href;
+const pause = new URL("../assets/pause.png", import.meta.url).href;
+const newarray = new URL("../assets/newarray.png", import.meta.url).href;
+const navigate = new URL("../assets/navigate.png", import.meta.url).href;
+const controls = new URL("../assets/controls.png", import.meta.url).href;
+const cancel = new URL("../assets/cancel.png", import.meta.url).href;
+const algorithms = new URL("../assets/algorithms.png", import.meta.url).href;
 
 const DialogContent1 = () => {
   return (
@@ -34,8 +42,8 @@ const DialogContent1 = () => {
             maxHeight: { xs: 167, md: 167 },
             maxWidth: { xs: 250, md: 250 },
           }}
-          alt="sort image"
-          src="src/assets/sort.png"
+          alt="sort"
+          src={sort}
         />
       </Grid2>
     </Grid2>
@@ -63,7 +71,7 @@ const DialogContent2 = () => {
             maxWidth: { xs: 250, md: 250 },
           }}
           alt="controls"
-          src="src/assets/controls.png"
+          src={controls}
         />
       </Grid2>
     </Grid2>
@@ -91,7 +99,7 @@ const DialogContent3 = () => {
             maxWidth: { xs: 250, md: 250 },
           }}
           alt="algorithms"
-          src="src/assets/algorithms.png"
+          src={algorithms}
         />
       </Grid2>
     </Grid2>
@@ -116,7 +124,7 @@ const DialogContent4 = () => {
             width: 160,
           }}
           alt="newarray"
-          src="src/assets/newarray.png"
+          src={newarray}
         />
       </Grid2>
       <Grid2 size={{ xs: 12, md: 6 }}>
@@ -133,7 +141,7 @@ const DialogContent4 = () => {
             width: 160,
           }}
           alt="play"
-          src="src/assets/play.png"
+          src={play}
         />
       </Grid2>
     </Grid2>
@@ -158,7 +166,7 @@ const DialogContent5 = () => {
             width: 160,
           }}
           alt="pause"
-          src="src/assets/pause.png"
+          src={pause}
         />
       </Grid2>
       <Grid2 size={{ xs: 12, md: 6 }}>
@@ -177,7 +185,7 @@ const DialogContent5 = () => {
             width: 160,
           }}
           alt="cancel"
-          src="src/assets/cancel.png"
+          src={cancel}
         />
       </Grid2>
     </Grid2>
@@ -203,7 +211,7 @@ const DialogContent6 = () => {
             width: 160,
           }}
           alt="navigate"
-          src="src/assets/navigate.png"
+          src={navigate}
         />
       </Grid2>
     </Grid2>
@@ -283,13 +291,7 @@ export default function TutorialDialog() {
         >
           <CloseIcon />
         </IconButton>
-        <DialogContent
-
-        //   sx={{
-        //     width: { xs: "70vw", sm: "50vw", md: "40vw", lg: "30vw" },
-        //     height: { xs: "45vh" },
-        //   }}
-        >
+        <DialogContent>
           <Typography gutterBottom>
             {DialogData[dialogNumber].content}
           </Typography>
