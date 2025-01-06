@@ -51,6 +51,7 @@ import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import CreateSortSequence from "./utils/CreateSortSequence";
 import CreateMergeSortSequence from "./utils/CreateMergeSortSequence";
+import TutorialDialog from "./Components/TutorialDialog";
 
 const darkTheme = createTheme({
   palette: {
@@ -317,7 +318,7 @@ const App: React.FC = (props: Props) => {
         })}
       </List>
       <Divider />
-      <Typography variant="h6" sx={{ my: 2 }}>
+      <Typography variant="h6" sx={{ mt: 1 }}>
         Jaimugil
       </Typography>
       <Grid2 container sx={{ display: "flex", justifyContent: "center" }}>
@@ -328,7 +329,7 @@ const App: React.FC = (props: Props) => {
             aria-label="Linkedin.com"
             href="https://www.linkedin.com/in/jaimugil-c-b6b508279/"
             target="_blank"
-            sx={{ ml: 1, mr: 1 }}
+            sx={{ mr: 1 }}
           >
             <LinkedInIcon />
           </IconButton>
@@ -342,7 +343,6 @@ const App: React.FC = (props: Props) => {
               onClick={() => {
                 navigator.clipboard.writeText("megalajai001@gmail.com");
               }}
-              sx={{ ml: 1, mr: 1 }}
             >
               <AlternateEmailIcon />
             </IconButton>
@@ -502,6 +502,7 @@ const App: React.FC = (props: Props) => {
           >
             {AlgorithmDescription[sortingAlgorithm]}
           </Typography>
+          <TutorialDialog />
           <SortingVisualizer
             barArray={barArray}
             sortingSpeed={sortingSpeed}
